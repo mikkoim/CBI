@@ -18,6 +18,7 @@ from imgtohex import imgToHex
 
 from chirpsdk import ChirpSDK, CallbackSet, CHIRP_SDK_STATE
 
+MAX_MSG_BITS = 32
 
 class Callbacks(CallbackSet):
 
@@ -44,10 +45,10 @@ class Callbacks(CallbackSet):
         pass
 
 def split_payload(payload):
-    if len(payload) < 32:
+    if len(payload) < MAX_MSG_BITS:
         return payload
     else:
-        n = 32
+        n = MAX_MSG_BITS
         parts = [payload[i:i+n] for i in range(0, len(payload), n)]
 
     return parts
@@ -73,7 +74,7 @@ def main(block_name, input_device, output_device,
     # Set callback functions
     sdk.set_callbacks(Callbacks())
 
-    # Generate random payload and send
+    # Generate payload and send
     payload = imgToHex(filename)
     parts = split_payload(payload)
 
@@ -89,7 +90,7 @@ def main(block_name, input_device, output_device,
         s=len(parts)*5))
     print("#############\n\n")
 
-    sdk.send([1],blocking=True)
+    sdk.send([1],blocking=True) #send a dummy message to prevent audio errors
     sdk.send(startmessage, blocking=True)
     print(list(startmessage))
     time.sleep(0.5)
