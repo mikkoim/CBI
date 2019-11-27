@@ -17,7 +17,7 @@ I = imread('zambia.jpg');
 
 B = rgb2gray(I);
 B2 = imadjust(B,stretchlim(B),[]);
-B3 = imresize(B2,[100,100]);
+B3 = imresize(B2,[64,64]);
 
 B4 = dither(B3);
 
@@ -26,17 +26,11 @@ imwrite(B4,'zambia_dither.gif')
 
 
 %% Binary
-I = imread('zambia.jpg');
+I = imread('homer.jpg');
 B = rgb2gray(I);
+B2 = imresize(B,[64,64]);
 
-BW = imbinarize(B,graythresh(B));
-imwrite(BW, 'zambia_bw.png')
-B3 = imresize(BW,[256,256]);
+BW = imbinarize(B2,graythresh(B2));
 imshow(BW)
 
-%% Huffman
-I = imread('zambia.jpg');
-B = rgb2gray(I);
-
-[symbols,p] = hist(B(:), double(unique(B)));
-[dict, avglen] = huffmandict(symbols,p);
+imwrite(BW, 'homer_bw.gif')
