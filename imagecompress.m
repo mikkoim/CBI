@@ -1,4 +1,4 @@
-I = imread('zambia.jpg');
+I = imread('ikea.jpg');
 
 B = rgb2gray(I);
 B2 = imresize(B,[100,100]);
@@ -26,11 +26,12 @@ imwrite(B4,'zambia_dither.gif')
 
 
 %% Binary
-I = imread('homer.jpg');
+I = imread('ikea.jpg');
 B = rgb2gray(I);
-B2 = imresize(B,[64,64]);
+B = I;
+B2 = imresize(B,[128,128]);
 
 BW = imbinarize(B2,graythresh(B2));
 imshow(BW)
 
-imwrite(BW, 'homer_bw.gif')
+imwrite(BW, 'ikea.png')

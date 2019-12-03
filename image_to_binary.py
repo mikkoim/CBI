@@ -10,11 +10,11 @@ from skimage.transform import resize
 
 from bitstring import BitArray
 
-def read_image(imgpath):
+def read_image(imgpath, size):
     I = skimage.io.imread(imgpath)
 
     G = rgb2gray(I) # Grayscale
-    R = resize(G, (64,64), anti_aliasing=True, mode='constant')
+    R = resize(G, (size,size), anti_aliasing=True, mode='constant')
 
     # Binarize image
     thresh = threshold_otsu(R)
@@ -47,7 +47,42 @@ def readhex(inpath):
         st = f.read()
     return st
 
-def main(inpath, outpath):
+
+#%% Santerin funktiot
+
+def imgToBitArr(m):
+    rows = []
+    for row in range(len(m)):
+        converted = convert(m[row])
+        rows.append(converted)
+    return (rows)
+
+
+def convert(list):
+    s = [str(i) for i in list]
+    res = hex(int("".join(s), 2))
+    return (res[2:])
+
+
+def bitArrToImg(n):
+    rowWidth = 0
+    image = []
+
+    # binääriksi ja selvitetään levein rivi
+    for row in range(len(n)):
+        arr = [int(digit) for digit in bin(int(n[row], 16))[2:]]
+        image.append(arr)
+        rowWidth = max([rowWidth, len(arr)])
+
+    # nollia rivin eteen
+    for row in image:
+        while len(row) < rowWidth:
+            row.insert(0, 0)
+    return image
+
+#%%
+
+def main(inpath, outpath, size):
     _, in_ext = os.path.splitext(inpath)
 
     if in_ext == '.txt':
@@ -56,7 +91,7 @@ def main(inpath, outpath):
         skimage.io.imsave(outpath+'.png',BW*255)
 
     else:
-        BW = read_image(inpath)
+        BW = read_image(inpath, size)
         h = BW2hex(BW)
         savehex(outpath, h)
         skimage.io.imsave(outpath+'.png',BW*255)
@@ -66,5 +101,6 @@ if __name__ == '__main__':
         description='Creates binary array from image')
     parser.add_argument('-i', help='Path to input image/text')
     parser.add_argument('-o', help='output filename')
+    parser.add_argument('-s', help='Size of one side', default=64, type=int)
     args = parser.parse_args()
-    main(args.i, args.o)
+    main(args.i, args.o, args.s)
